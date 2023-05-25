@@ -91,5 +91,129 @@ PLAYBOOK.script            : Bash script used by the Playbook (not ment to be ex
 README.md                  : The file you are currently reading
 ```
 
+### Create a copy of the configuration sample
+
+```bash
+supporter_adm [ ~/azure_meshcentral_001 ]$ cp ./GLOBAL_CONFIG.conf.sample ./GLOBAL_CONFIG.conf
+```
+
+### Edit the configuration file
+
+Walk through the configuration file `GLOBAL_CONFIG.conf` and edit the following lines to your needs. I personally recommend to use the VIM Editor with syntax highlighing enabled to do this.
+
+**LOCATION**
+
+Change the line 
+
+```bash
+export LOCATION='eastus'
+```
+
+to your needs to represent a valid Azure Cloud Region. This is the location where your virtual machine will be deployed e.g. `eastus`.
+You can list available regions with `az account list-locations | jq '.[].metadata.pairedRegion | .[]?.name'`
+
+**DNS_HOSTNAME**
+
+Change the line
+
+```bash
+export DNS_HOSTNAME='test-meshcentral'
+```
+
+to your needs to represent the **public** hostname of your machine (host part only). `DNS_HOSTNAME` must match the regex `^[a-z][a-z0-9-]{1,61}[a-z0-9]$` to be accepted by Azure Cloud.
+
+**DNS_ZONE**
+
+Do **not** edit. This variable will always be `$LOCATION.cloudapp.azure.com`
 
 
+**VM_IMAGE**
+
+Change the line
+
+```bash
+export VM_IMAGE='almalinux:almalinux:9-gen2:9.1.2022122801'
+```
+
+to your needs to represent a valid Azure Cloud Linux Image available in the Azure Region you specified earlier.
+You can list available Almalinux images with `az vm image list --all --publisher almalinux | jq '.[] | .urn' | grep ':9'`
+
+**RESOURCE_GROUP_NAME**
+
+Change the line
+
+```bash
+export RESOURCE_GROUP_NAME='CUSTOMER_MESHCENTRAL'
+```
+
+to your needs. This will be the name of the Resource Group generated in the Azure Cloud that contains the entire setup.
+
+**VM_NAME**
+
+Change the line
+
+```bash
+export VM_NAME='test-meshcentral'
+```
+
+to your needs. This will be the local hostname of the meshcentral server. It makes sence to use the same value as previously used for DNS_HOSTNAME.
+
+**VM_SIZE**
+
+Change the line
+
+```bash
+export VM_SIZE='Standard_B2s'
+```
+
+to your needs to represent a valid Azure Cloud VM Size for a linux host. The standard `Standard_B2s` size works good for our purpose.
+
+**ADMIN_USERNAME**
+
+Change the line
+
+```bash
+export ADMIN_USERNAME='loginuser'
+```
+
+to your needs. This is the local user that will be allowed to connect to the linux host using SSH. The SSH keys present in your Azure Cloud Shell will be automatically added during deployment and you will be able to login with this user without using a password instead using your public/private key pair.
+
+**Now we will setup some variables that are in 'lower case'. Those are all used to automatically configure MeshCentral.**
+
+**title**
+
+Change the line
+
+```bash
+export title="Customer RemoteControl"
+```
+
+to your needs. The string you enter here will be configured as the banner of the MeshCentral Server Website and visible at the login screen of the MeshCentral Server.
+
+
+**adminuser, adminpass, adminmail,adminname**
+
+These 4 variables will be used to generate the administrative user for the MeshCentral Server.
+
+Change the following 4 lines
+
+```bash
+export adminuser='adminuser'
+export adminpass='WellChoose@GoodPassword1!'
+export adminmail='adminuser@customer.domain'
+export adminname='Max Mustermann'
+```
+
+to your needs. The values are self explanatory. **Make sure you change the password to a different value than the sample provides.**
+
+**le_email**
+
+Change the following line
+
+```bash
+export le_email='adminuser@azure.com'
+```
+
+to your needs. You should use your personal email address here.
+
+**You must specify a valid domain name after the `@` sign or the automatic certificate retrieval from Let's Encrypt will not work!**
