@@ -1,0 +1,116 @@
+#!/bin/bash
+# must be run as root
+
+configfile='GLOBAL_CONFIG.conf' # only a filename, no paths!
+if [ ! -f "./$configfile" ]; then
+    echo "./$configfile does not exist - ending."
+    exit
+fi
+# source the configuration file
+source "./$configfile"
+
+## move meshcentral to /opt
+echo '--------------------------------------------------------------------------'
+echo -n 'Copying /home/loginuser/meshcentral to /opt/meshcentral ...'
+cd
+cp -R -f "/home/loginuser/meshcentral" /opt
+echo 'done'
+echo '--------------------------------------------------------------------------'
+
+# execute once to create an admin user for meshcentral
+export NODE_PATH=/opt/meshcentral/lib/node_modules
+export NODE_VIRTUAL_ENV=/opt/meshcentral
+export npm_config_prefix=/opt/meshcentral
+export PATH=$PATH:/opt/meshcentral/lib/node_modules/.bin:/opt/meshcentral/bin:
+export NPM_CONFIG_PREFIX=/opt/meshcentral
+echo '--------------------------------------------------------------------------'
+echo -e 'Starting meshcentral once to create the admin user ...\n'
+/opt/meshcentral/bin/node /opt/meshcentral/node_modules/meshcentral/ \
+        --createaccount "$adminuser" \
+        --pass "$adminpass" \
+        --email "$adminpass" \
+        --name "$adminname"
+echo 'done'
+echo "User '$adminuser' with password '$adminpass' created."
+echo '--------------------------------------------------------------------------'
+
+# start and stop the service ONCE to create config.js (takes about 20 seconds)
+echo '--------------------------------------------------------------------------'
+echo 'Starting meshcentral once to create config.js (takes about 25 seconds) ...'
+echo -e '--------------------------------------------------------------------------\n'
+# start and goto background
+/opt/meshcentral/bin/node /opt/meshcentral/node_modules/meshcentral/ &
+sleep 25
+# stop
+killall /opt/meshcentral/bin/node
+echo 'done'
+echo '--------------------------------------------------------------------------'
+
+# set config options in /opt/meshcentral/meshcentral-data/config.json
+echo '--------------------------------------------------------------------------'
+echo "Setting config options in /opt/meshcentral/meshcentral-data/config.json ..."
+# set title
+echo "title: $title"
+cat <<< $(jq ".domains[]? |= . * {\"title\": \"$title\"}" /opt/meshcentral/meshcentral-data/config.json) > /opt/meshcentral/meshcentral-data/config.json
+
+# disable new accounts
+echo "newAccounts: false"
+cat <<< $(jq '.domains[]? |= . * {"newAccounts": false}' /opt/meshcentral/meshcentral-data/config.json) > /opt/meshcentral/meshcentral-data/config.json
+#jq ".domains[] | {newAccounts}" /opt/meshcentral/meshcentral-data/config.json
+
+# set password policy
+echo "passwordRequirements: min: 12, max: 128, upper: 1, lower: 1"
+cat <<< $(jq ".domains[]? |= . * {\"passwordRequirements\": { "min": 12, "max": 128, "upper": 1, "lower": 1, "numeric": 1, "nonalpha": 1 }}" /opt/meshcentral/meshcentral-data/config.json) > /opt/meshcentral/meshcentral-data/config.json
+#jq ".domains[] | {passwordRequirements}" /opt/meshcentral/meshcentral-data/config.json
+
+# hostname for cert needed for lets encrypt
+echo "cert"
+cat <<< $(jq ".settings |= . * {\"cert\": \"$fqdn\"}" /opt/meshcentral/meshcentral-data/config.json) > /opt/meshcentral/meshcentral-data/config.json
+#jq ".settings | {cert}" /opt/meshcentral/meshcentral-data/config.json
+
+# letsencrypt
+echo "letsencrypt"
+cat <<< $(jq ". |= . * {\"letsencrypt\": {\"email\": \"$le_email\", \"names\": \"$le_names\", \"rsaKeySize\": $le_keysize, \"production\": $le_prod}}" /opt/meshcentral/meshcentral-data/config.json) > /opt/meshcentral/meshcentral-data/config.json
+#jq ". | {letsencrypt}" /opt/meshcentral/meshcentral-data/config.json
+
+# "WANonly": true,
+echo "WANonly: true"
+cat <<< $(jq '.settings |= . * {"WANonly": true}' /opt/meshcentral/meshcentral-data/config.json) > /opt/meshcentral/meshcentral-data/config.json
+
+# "StrictTransportSecurity": false (disable HSTS)
+echo "StrictTransportSecurity: false"
+cat <<< $(jq '.settings |= . * {"StrictTransportSecurity": false}' /opt/meshcentral/meshcentral-data/config.json) > /opt/meshcentral/meshcentral-data/config.json
+echo '--------------------------------------------------------------------------'
+
+# create service meshcentral.service
+echo -n "Creating meshcentral.service ..."
+cat >"/etc/systemd/system/meshcentral.service" <<EOL
+[Unit]
+Description=Meshcentral2 runnning on node
+After=syslog.target
+
+[Service]
+Environment=NODE_PATH=/opt/meshcentral/lib/node_modules
+Environment=NODE_VIRTUAL_ENV=/opt/meshcentral
+Environment=npm_config_prefix=/opt/meshcentral
+Environment=PATH=\$PATH:/opt/meshcentral/lib/node_modules/.bin:/opt/meshcentral/bin:
+Environment=NPM_CONFIG_PREFIX=/opt/meshcentral
+WorkingDirectory=/opt/meshcentral
+SyslogIdentifier=meshcentral-node
+Restart=always
+StandardOutput=syslog
+ExecStart=/opt/meshcentral/bin/node /opt/meshcentral/node_modules/meshcentral/
+
+[Install]
+WantedBy=multi-user.target
+EOL
+echo "done"
+# reload service files, start and enable meshcentral
+echo '--------------------------------------------------------------------------'
+echo 'enabling and starting service meshcentral.service'
+echo '--------------------------------------------------------------------------'
+systemctl daemon-reload
+systemctl enable meshcentral.service
+systemctl start meshcentral
+echo "done"
+echo '--------------------------------------------------------------------------'

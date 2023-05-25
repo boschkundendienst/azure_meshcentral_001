@@ -1,0 +1,75 @@
+# This file will be read by 01_create_azure_vm.bash
+# make sure you rename it to GLOBAL_CONFIG.conf
+
+# set Azure Region
+# you can list available regions with
+#   az account list-locations | jq '.[].metadata.pairedRegion | .[]?.name'
+export LOCATION='eastus'
+
+# set the public fqdn for the vm
+# it will be DNS_HOSTNAME.LOCATION.cloudapp.azure.com
+# based on your setting for LOCATON
+# DNS_HOSTNAME must match regex ^[a-z][a-z0-9-]{1,61}[a-z0-9]$
+export DNS_HOSTNAME='test-meshcentral'
+export DNS_ZONE="$LOCATION.cloudapp.azure.com"
+
+# set Azure Linux Image to use
+# you can list available almalinux images with
+#   az vm image list --all --publisher almalinux | jq '.[] | .urn' | grep ':9'
+export VM_IMAGE='almalinux:almalinux:9-gen2:9.1.2022122801'
+
+# set the resource group to generate
+# it makes sense to give it a name that can be identified easily
+# e.g. CUSTOMER_MESHCENTRAL
+export RESOURCE_GROUP_NAME='CUSTOMER_MESHCENTRAL'
+
+# set the name of the virtual machine
+# make sure to only use valid hostnames here e.g. cust-meshcentral
+# VM_NAME must match regex ^[a-z][a-z0-9-]{1,61}[a-z0-9]$
+export VM_NAME='test-meshcentral'
+
+# configure the vm size
+# you can get a list of Standard_B sizes with
+#  az vm list-sizes --location=$LOCATION | jq '.[].name' | grep 'Standard_B'
+export VM_SIZE='Standard_B2s'
+
+# set the username to login to the vm via ssh
+# e.g. loginuser
+export ADMIN_USERNAME='loginuser'
+
+# added by a run of 01_create_azure_vm.bash
+# will be updated automatically during runtime
+export IP_ADDRESS='000.000.000.000' # do not edit manually
+
+########################################################
+### the next variables are needed to personalize the ###
+### Meshcentral instance                             ###
+### they have to be configured and must be correct   ###
+########################################################
+
+# configure the banner of the meshcentral website
+# e.g. "Customer RemoteControl"
+export title="Customer RemoteControl"
+
+# configure the admin user
+export adminuser='adminuser'
+export adminpass='WellChoose@GoodPassword1!'
+export adminmail='adminuser@customer.domain'
+export adminname='Max Mustermann'
+
+# configure the fqdn
+# We use the values of already available variables
+# to generate it so do not change the next line!
+export fqdn="$DNS_HOSTNAME.$DNS_ZONE" # do not change this line
+
+# configure Let's Encrypt
+# see Let's Encrypt section of
+# https://meshcentral.com/info/docs/MeshCentral2UserGuide.pdf
+# for info about the meaning of the parameters
+#
+# The domain part of le_email bust be valid or
+# Let's Encrypt will not work!
+export le_email='adminuser@azure.com'
+export le_names="$fqdn"  # do not change this line!
+export le_keysize='3072' # do not change this line!
+export le_prod='true'    # do not change this line!

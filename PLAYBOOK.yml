@@ -1,0 +1,78 @@
+## meshcentral.yml
+- hosts: all
+  tasks:
+  - name: Update all installed packages using DNF module
+    yum:
+      name: '*'
+      state: latest
+      update_cache: yes
+      update_only: yes
+    become: yes
+    register: dnf_update_status
+
+  - name: Reboot when packages were updated
+    reboot:
+    become: yes
+    when: dnf_update_status.changed
+
+  - name: install python3-pip
+    dnf:
+     name:
+      - python3-pip
+      - jq
+      - wget
+      - bind-utils
+      - policycoreutils-python-utils
+      - setools-console
+    become: yes
+
+  - name: install nodeenv using pip3 (as normal user)
+    command:
+     cmd: pip3 install nodeenv
+    become: no
+
+  - name: create temporary virtual node environment for meshcentral (as normal user)
+    command:
+     cmd: nodeenv -v "$HOME/meshcentral" # folder MUST NOT exist!
+    become: no
+
+  - name: cd into directory activate nodeenv and instapp meshcentral using npm (as normal user)
+    environment:
+        NODE_VIRTUAL_ENV: ./meshcentral
+        NODE_PATH: ./meshcentral/lib/node_modules
+        PATH: "./meshcentral/lib/node_modules/.bin:./bin:$PATH"
+        NPM_CONFIG_PREFIX: ./meshcentral
+    shell:
+     cmd: npm install meshcentral
+     chdir: ./meshcentral
+    become: no
+
+  - name: copy installation script to target
+    ansible.builtin.copy:
+      src: ./PLAYBOOK.script
+      dest: /root/configure_meshcentral.bash
+      owner: root
+      group: root
+      mode: u+rw,g-wx,o-rwx
+    become: yes
+  - name: copy configuration file to target
+    ansible.builtin.copy:
+      src: ./GLOBAL_CONFIG.conf
+      dest: /root/GLOBAL_CONFIG.conf
+      owner: root
+      group: root
+    become: yes
+  - name: execute the script on remote host
+    command: /bin/bash /root/configure_meshcentral.bash
+    args:
+      chdir: /root/
+    become: yes
+
+    # firewall not needed since we are behind an azure cloud
+    # network security group NSG
+  - name: stop and disable firewalld
+    ansible.builtin.systemd:
+      name: firewalld
+      state: stopped
+      enabled: false
+    become: yes
