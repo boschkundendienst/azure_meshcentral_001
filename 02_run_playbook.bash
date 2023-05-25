@@ -40,6 +40,6 @@ echo ""
 echo " https://$fqdn"
 echo ""
 echo "It can take some minutes until the LE certificates are created."
-echo "SSH Login should be possible with:
+echo "SSH Login should be possible with:"
 echo ""
 echo "ssh $ADMIN_USERNAME@IP_ADDRESS"
