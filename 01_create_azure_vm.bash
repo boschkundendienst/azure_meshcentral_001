@@ -1,15 +1,15 @@
 #!/bin/bash
 #set -x
 
-# check if command 'az' is present
-echo "if nothing happens after you see this text, the command 'az' is missing"
-command -v az &>/dev/null || exit
-
 configfile='GLOBAL_CONFIG.conf' # only filename, no paths!
 if [ ! -f "./$configfile" ]; then
     echo "./$configfile does not exist - ending."
     exit
 fi
+
+# check if command 'az' is present
+echo "if nothing happens after you see this text, the command 'az' is missing"
+command -v az &>/dev/null || exit
 # source the configuration file
 source "./$configfile"
 
