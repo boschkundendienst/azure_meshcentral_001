@@ -217,3 +217,58 @@ export le_email='adminuser@azure.com'
 to your needs. You should use your personal email address here.
 
 **You must specify a valid domain name after the `@` sign or the automatic certificate retrieval from Let's Encrypt will not work!**
+
+### Make the scripts executable
+
+**Verify all variables in `GLOBAL_CONFIG.conf` twice before you continue !!!**
+
+Make the script `01_create_azure_vm.bash` and `02_run_playbook.bash`executable by entering:
+
+```bash
+supporter_adm [ ~/clouddrive/azure_meshcentral_001 ]$ chmod +x ./01_create_azure_vm.bash
+supporter_adm [ ~/clouddrive/azure_meshcentral_001 ]$ chmod +x ./02_run_playbook.bash
+```
+
+### automatic creation of the Linux VM in Azure Cloud
+
+Execute **01_create_azure_vm.bash** by entering
+
+```
+supporter_adm [ ~/clouddrive/azure_meshcentral_001 ]$ ./01_create_azure_vm.bash
+```
+
+This will initiate the process of creating the entire Azure Cloud setup.
+
+- creating a resource group in Azure Cloud
+- create the Linux VM in the resource group with a public IP
+- retrieve the public IP and set the public FQDN
+- open port 80 and 443 from the public internet to the Linux VM
+
+### automatic deployment of MeshCentral on the Linux VM in Azure Cloud
+
+**After and only if the execution of the previous script worked without errors** you can continue.
+
+Execute **02_run_playbook.bash** by entering
+
+```
+supporter_adm [ ~/clouddrive/azure_meshcentral_001 ]$ ./02_run_playbook.bash
+```
+
+This will prepare the Linux VM for MeshCentral and then deploy MeshCentral.
+
+The first part of the script uses Ansible to
+
+- update all installed packages using DNF module
+- reboot the machine if needed
+- install necessary packages
+- create a temporary virtual node environment for meshcentral (as normal user)
+- activate a virtual node environment and installs meshcentral npm package (as normal user)
+- copy a script to the VM that configures MeshCentral in `/opt` and creates the `meshcentral.service` file
+- executes the the script on the VM
+- stops `firewalld` on the VM since we use the Network Security Group (NSG) in Azure cloud as firewall
+
+## Summary
+
+You should now be able to connect to your MeshCentral Server from the public internet using https. MeshCentral should already have a valid SSL certificate (from Let's Encrypt) and you should be able to login with the admin credentials you configured as `adminuser` and `adminpass`.
+
+## Links
