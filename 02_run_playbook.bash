@@ -15,23 +15,22 @@ source "./$configfile"
 echo '----------------------------------------------------------------------------'
 echo 'Your preferences'
 echo '----------------------------------------------------------------------------'
-echo "title              :"
+echo "title              : $title"
 echo "adminuser          : $adminuser" # make sure to write it down!
 echo "adminpass          : $adminpass" # make sure to write it down!
-echo "adminmail          : $adminemail"
+echo "adminmail          : $adminmail"
 echo "adminname          : $adminname"
 echo "fqdn               : $fqdn"
 echo "le_email           : $le_email # domain part must be valid or LE will fail"
 echo "le_names           : $le_names"
 echo "le_keysize         : $le_keysize"
 echo "le_prod            : $le_prod"
-echo ""
-echo "SSH Login with     : ssh $ADMIN_USERNAME@IP_ADDRESS
+echo "SSH Login with     : ssh $ADMIN_USERNAME@$IP_ADDRESS"
 echo '----------------------------------------------------------------------------'
 
 # wait for user to press enter
 read -s -p "Press enter to continue or Ctrl+C to stop here"
-echo -e "\nStarting deployment phase 2 using ansible on the remote host"
+echo -e "\nStarting deployment"
 
 ansible-playbook -v -i $IP_ADDRESS,  -b -u $ADMIN_USERNAME "$playbook"
 
