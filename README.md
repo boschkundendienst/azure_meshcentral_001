@@ -272,3 +272,11 @@ The first part of the script uses Ansible to
 You should now be able to connect to your MeshCentral Server from the public internet using https. MeshCentral should already have a valid SSL certificate (from Let's Encrypt) and you should be able to login with the admin credentials you configured as `adminuser` and `adminpass`.
 
 ## Links
+
+- [MeshCentral Homepage](https://www.meshcommander.com/meshcentral2)
+- [MeshCentral User Guide](https://meshcentral.com/info/docs/MeshCentral2UserGuide.pdf)
+- [MeshCentral Documentation at Github](https://ylianst.github.io/MeshCentral/meshcentral/)
+- [MeshCentral Let's Encrypt support](https://meshcentral2.blogspot.com/2018/11/because-meshcentral-is-web-based-and.html)
+- [MeshCentral Configuration Schema](https://ylianst.github.io/MeshCentral/meshcentral/config/)
+- [Let's Debug - Verify Let's Encrypt Certificate Issuing](https://letsdebug.net/)
+- [MeshCentral Community Wiki](https://meshcentral-community.com/)
