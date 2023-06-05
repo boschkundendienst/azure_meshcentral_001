@@ -22,7 +22,7 @@ Machines where the MeshAgent is deployed need outbound connectivity https/tcp(44
 
 ### "Admin" side
 
--After MeshCentral server is running Admin/Supporter needs outbound connectivity https/tcp(443) to public IP of the MeshCentral Server.
+- After MeshCentral server is running Admin/Supporter needs outbound connectivity https/tcp(443) to public IP of the MeshCentral Server.
 
 ## Deployment
 
