@@ -28,7 +28,9 @@ Machines where the MeshAgent is deployed need outbound connectivity https/tcp(44
 
 ### Login to an Azure Cloud shell
 
-If your cloud shell uses PowerShell enter `/bin/bash` to switch to a Bash shell.
+You can login to the Azure Cloud shell directly with the following URL: [https://portal.azure.com/#cloudshell/](https://portal.azure.com/#cloudshell/)
+
+If your cloud shell uses PowerShell enter `/bin/bash` or toggle the drop-down in the web-version to Bash to switch to a Bash shell.
 
 ```
 Mandant 0: SUPPORTER Supporter Company (supporterxyzcom.onmicrosoft.com)
