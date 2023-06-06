@@ -22,7 +22,7 @@ Machines where the MeshAgent is deployed need outbound connectivity https/tcp(44
 
 ### "Admin" side
 
-- After MeshCentral server is running Admin/Supporter needs outbound connectivity https/tcp(443) to public IP of the MeshCentral Server.
+-After MeshCentral server is running Admin/Supporter needs outbound connectivity https/tcp(443) to public IP of the MeshCentral Server.
 
 ## Deployment
 
@@ -282,3 +282,5 @@ You should now be able to connect to your MeshCentral Server from the public int
 - [MeshCentral Configuration Schema](https://ylianst.github.io/MeshCentral/meshcentral/config/)
 - [Let's Debug - Verify Let's Encrypt Certificate Issuing](https://letsdebug.net/)
 - [MeshCentral Community Wiki](https://meshcentral-community.com/)
+- [Open Azure Cloud Shell](https://portal.azure.com/#cloudshell/)
+- [Persist files in Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/persisting-shell-storage)
