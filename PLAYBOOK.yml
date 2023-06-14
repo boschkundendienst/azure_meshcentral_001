@@ -28,7 +28,7 @@
 
   - name: install nodeenv using pip3 (as normal user)
     command:
-     cmd: pip3 install nodeenv
+     cmd: pip3 install --user nodeenv
     become: no
 
   - name: create temporary virtual node environment for meshcentral (as normal user)
