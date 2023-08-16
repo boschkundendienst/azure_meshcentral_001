@@ -1,6 +1,6 @@
 # AzureMeshCentral
 
-AzureMeshCentral has been created to be able to quickly deploy a [MeshCentral intance](https://www.meshcommander.com/meshcentral2) on a virtual machine hosted in the Microsoft Azure Cloud. It can't be called perfect yet but it works. It took me about 2 days to develop.
+AzureMeshCentral has been created to be able to quickly deploy a [MeshCentral instance](https://www.meshcommander.com/meshcentral2) on a virtual machine hosted in the Microsoft Azure Cloud. It can't be called perfect yet but it works. It took me about 2 days to develop.
 
 The project was started in order to be able to establish remote access to a "foreign network" extremely quickly.
 
